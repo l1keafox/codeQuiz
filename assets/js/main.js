@@ -24,8 +24,8 @@ let allQuestions =  [
 let questionIndex = 0;
 let currentScore;
 let currentQuestionTimer;
+let currentTimerID;
 const qTimer = 5;
-
 let startButton = document.querySelector('#startButton');
 let quizQuestion = document.querySelector('#question');
 let answersList = document.querySelector('#answers');
@@ -40,14 +40,16 @@ function startQuiz(event){
     Doesn't work this doesn't
     */
     currentScore = 0;
+    document.querySelector('#currentScore').textContent = "score: "+currentScore;
     startScreen.style.display = 'none';
     quizScreen.style.display = 'flex';
     printQuestion();
-    restartTimer();
+    
     var imageContainer = document.querySelector('#answers');
     imageContainer.addEventListener("click",answerQuiz);
     console.log(imageContainer ,'answer container');
 }
+
 
 function restartTimer(){
     currentQuestionTimer = qTimer;
@@ -59,41 +61,56 @@ function restartTimer(){
         if(!currentQuestionTimer ){
             currentQuestionTimer = qTimer;
             questionAnswer(false);
-            clearInterval(timerInterval);
+            clearInterval(currentTimerID);
         }
     },1000);
+    currentTimerID = timerInterval;
+    
 }
 
 function questionAnswer(answer){
+    clearInterval(currentTimerID);
+
     if(questionIndex === allQuestions.length-1){
         console.log("FINISHED QUIZ!");  
-        recordHighScore();
-        showHighScore();
-        startScreen.style.display = 'flex';
         quizScreen.style.display = 'none';
-    
+        recordHighScore();
+        return;
     }else if(answer){
         console.log("GOOD ANSWER");
+        currentScore += 100;
         questionIndex++;
         printQuestion();
-        restartTimer();
+        
     } else {
         console.log("BAD ANSWER/TIMER");
+        currentScore -= 50;
         questionIndex++;
         printQuestion();
-        restartTimer();
+        
     }
 }
 
 
 function recordHighScore(){
-    
-}
-function showHighScore(){
+    let enterName = document.querySelector('#enterName');
+    enterName.style.display = 'flex';
+    document.querySelector('#submitName').addEventListener("click", function(){
+        // this is where we add the name and setup for new game.
+        showHighScore();
+        enterName.style.display = 'none';
+        questionIndex = 0;
+    });
     
 }
 
+function showHighScore(){
+    startScreen.style.display = 'flex';
+    console.log("SHow high Score?");
+}
+
 function printQuestion(){
+    restartTimer();
     // answersList needs to clear of any buttons
     let oldButtons = document.querySelectorAll('.anAnswer');
     for(let i = 0; i < oldButtons.length;i++){
@@ -101,17 +118,13 @@ function printQuestion(){
     }
     let oneQuestion = allQuestions[questionIndex];
     quizQuestion.textContent = oneQuestion.question;
-
+    document.querySelector('#currentScore').textContent = "score: "+currentScore;
     for(let i = 0;i < oneQuestion.answers.length;i++){
-        console.log('Adding questions');
         var answerButton = document.createElement('button');
         answerButton.textContent = oneQuestion.answers[i];
-        console.log(answerButton);
         answerButton.setAttribute('data-buttonID',i);
         answerButton.setAttribute('class','anAnswer');
         answersList.appendChild(answerButton);
-        // now we want to add an event listener to all the buttons
-        // when that button is clicked it will check against the oneQuestion.answer;
     }
 }
 
@@ -131,5 +144,12 @@ function answerQuiz(event){
     questionAnswer(thisAnswer);
 }
 
+function showScoreHideEverything(event){
+    console.log('score button pressed');
+    showHighScore();
+}
+
 
 startButton.addEventListener("click", startQuiz);
+
+document.querySelector('#highScore').addEventListener("click",showScoreHideEverything);

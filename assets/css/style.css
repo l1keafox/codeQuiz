@@ -38,7 +38,16 @@ p {
     display: flex;
     justify-content: center;
 }
+h2{
+    display: flex;
+    justify-content: center;
+}
 
 #quizScreen{
     display: none;
+    flex-direction: column;
+}
+#answers{
+    display: flex;
+    flex-direction :column;
 }

@@ -50,7 +50,7 @@ const qTimer = 60; // Const game timer.
 
 
 /*
-    DOM objects
+    DOM objects to global vars
 */
 let startButton = document.querySelector('#startButton');
 let quizQuestion = document.querySelector('#question');
@@ -181,7 +181,7 @@ function recordHighScore(){
             } else {
                 pHighScore = JSON.parse (rawHighScore);
             }
-            if(nameEntered.value === "" || finalScore <= 1 ){
+            if(nameEntered.value === "" ){ //|| finalScore <= 1 
                 console.log("NOTHING entered");
             } else {
                 pHighScore.push( {
@@ -260,7 +260,6 @@ function showScoreHideEverything(event){
 
 
 startButton.addEventListener("click", startQuiz);
-
 document.querySelector('#highScore').addEventListener("click",showScoreHideEverything);
 document.querySelector('#clearScore').addEventListener("click", function(){
     localStorage.setItem("highScore",JSON.stringify([]));

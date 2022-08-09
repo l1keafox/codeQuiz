@@ -165,56 +165,57 @@ function recordHighScore(){
     
     enterName.style.display = 'flex';
     let finalScore = currentScore + (currentQuestionTimer*100) ;
-    scorePrint.textContent = "Your score is :"+finalScore;
-    document.querySelector('#submitName').addEventListener("click", function(){
-        // this is where we add the name and setup for new game.
-        
-        let nameEntered = document.querySelector('#scoreName');
-        console.log(nameEntered.value,'namedEnter Score is',finalScore);
-        
-        let rawHighScore = localStorage.getItem("highScore");
-        let pHighScore;
-        if(!rawHighScore){
-            console.log("create new ");
-            pHighScore =  [ ] ;
-        } else {
-            pHighScore = JSON.parse (rawHighScore);
-        }
-        if(nameEntered.value === ""){
-            console.log("NOTHING entered");
-        } else {
-            pHighScore.push( {
-                name:nameEntered.value,
-                score:finalScore,
-            });
-        }
-
-        localStorage.setItem("highScore",JSON.stringify(pHighScore));
-        showHighScore();
-        enterName.style.display = 'none';
-        questionIndex = 0;
-    },{once:true});
+    if(currentScore < 0){
+        finalScore = 1;
+    }
+    scorePrint.textContent = "Your score is : "+finalScore;
     
+        document.querySelector('#submitName').addEventListener("click", function(){
+            // this is where we add the name and setup for new game.
+            let nameEntered = document.querySelector('#scoreName');
+            
+            let rawHighScore = localStorage.getItem("highScore");
+            let pHighScore;
+            if(!rawHighScore){
+                pHighScore =  [ ] ;
+            } else {
+                pHighScore = JSON.parse (rawHighScore);
+            }
+            if(nameEntered.value === "" || finalScore <= 1 ){
+                console.log("NOTHING entered");
+            } else {
+                pHighScore.push( {
+                    name:nameEntered.value,
+                    score:finalScore,
+                });
+            }
+    
+            localStorage.setItem("highScore",JSON.stringify(pHighScore));
+            showHighScore();
+            enterName.style.display = 'none';
+            questionIndex = 0;
+        },{once:true});
+    
+
 }
 
 function showHighScore(scoreList){
     let fakeList = [
         {
-            name:'foy',
+            name:'NOT',
             score: 100,
         },
         {
-            name:'foxy',
+            name:'WORKING',
             score: 1000,
         },
         {
-            name:'foxy',
+            name:'LIST',
             score: 500,
         },
     ];
     let rawHighScore = localStorage.getItem("highScore");
     if(rawHighScore){
-        console.log('Found list so using that instead!');
         fakeList = JSON.parse (rawHighScore);
     }
 
@@ -230,8 +231,6 @@ function showHighScore(scoreList){
     }
 
     for(let i = 0;i<fakeList.length;i++){
-        console.log("doing list?")
-        
         var list = document.createElement("li");
         list.textContent = fakeList[i].name + "  /  " +fakeList[i].score;
         listEl.appendChild(list);
@@ -244,16 +243,13 @@ function showHighScore(scoreList){
         document.querySelector('#highScoreList').style.display = 'none';
         startScreen.style.display = 'flex';
     });
-    console.log("SHow high Score?");
 }
 
 
 function showScoreHideEverything(event){
-    console.log('score button pressed');
     let rawHighScore = localStorage.getItem("highScore");
     let pHighScore;
     if(!rawHighScore){
-        console.log("create new ");
         pHighScore = JSON.stringify( [ ] );
         localStorage.setItem("highScore",pHighScore);
     } else {

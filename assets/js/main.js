@@ -17,7 +17,7 @@ let allQuestions =  [
     {   
         question: "To do or not to do", // 
         image:null,//
-        
+
         answers: ["todo","not"], // 
         correctAnswer: 1, // 0-1 
     },
@@ -27,7 +27,7 @@ let questionIndex = 0;
 let currentScore;
 let currentQuestionTimer;
 let currentTimerID;
-const qTimer = 5;
+const qTimer = 60;
 let startButton = document.querySelector('#startButton');
 let quizQuestion = document.querySelector('#question');
 let answersList = document.querySelector('#answers');
@@ -42,39 +42,32 @@ function startQuiz(event){
     Doesn't work this doesn't
     */
     currentScore = 0;
+    currentQuestionTimer = 60;
     results.textContent = " ";
     document.querySelector('#currentScore').textContent = "score: "+currentScore;
     startScreen.style.display = 'none';
     quizScreen.style.display = 'flex';
     printQuestion();
-    
-    var imageContainer = document.querySelector('#answers');
-    imageContainer.addEventListener("click",answerQuiz);
-    console.log(imageContainer ,'answer container');
-}
 
-
-
-function restartTimer(){
-    currentQuestionTimer = qTimer;
     var timerDisplay = document.querySelector('#currentTime');
     timerDisplay.textContent = 'timer:'+currentQuestionTimer;
     var timerInterval = setInterval(function(){
         currentQuestionTimer--;
         timerDisplay.textContent = 'timer:'+currentQuestionTimer;
         if(!currentQuestionTimer ){
-            currentQuestionTimer = qTimer;
-            questionAnswer(false);
-            results.textContent = 'Timed out';
-            //clearInterval(currentTimerID);
+            console.log('Game over!');
+            quizScreen.style.display = 'none';
+            recordHighScore();
         }
     },1000);
     currentTimerID = timerInterval;
-    
+        
+    var imageContainer = document.querySelector('#answers');
+    imageContainer.addEventListener("click",answerQuiz);
+    console.log(imageContainer ,'answer container');
 }
 
 function questionAnswer(answer){
-    clearInterval(currentTimerID);
 
     if(answer){
         console.log("GOOD ANSWER");
@@ -83,6 +76,7 @@ function questionAnswer(answer){
     } else {
         console.log("BAD ANSWER/TIMER");
         currentScore -= 50;
+        currentQuestionTimer-=5;
         results.textContent = answer + '-50 points';
     }
     document.querySelector('#currentScore').textContent = "score: "+currentScore;
@@ -102,14 +96,16 @@ function questionAnswer(answer){
 function recordHighScore(){
     let enterName = document.querySelector('#enterName');
     let scorePrint = document.querySelector('#printScore');
+    clearInterval(currentTimerID);
     
     enterName.style.display = 'flex';
-    scorePrint.textContent = "Your score is :"+currentScore;
+    let finalScore = currentScore + (currentQuestionTimer*100) ;
+    scorePrint.textContent = "Your score is :"+finalScore;
     document.querySelector('#submitName').addEventListener("click", function(){
         // this is where we add the name and setup for new game.
         
         let nameEntered = document.querySelector('#scoreName');
-        console.log(nameEntered.value,'namedEnter Score is',currentScore);
+        console.log(nameEntered.value,'namedEnter Score is',finalScore);
         
         let rawHighScore = localStorage.getItem("highScore");
         let pHighScore;
@@ -122,7 +118,7 @@ function recordHighScore(){
 
         pHighScore.push( {
             name:nameEntered.value,
-            score:currentScore,
+            score:finalScore,
         });
         localStorage.setItem("highScore",JSON.stringify(pHighScore));
 
@@ -184,7 +180,7 @@ function showHighScore(scoreList){
 }
 
 function printQuestion(){
-    restartTimer();
+    //restartTimer();
     // answersList needs to clear of any buttons
     let oldButtons = document.querySelectorAll('.anAnswer');
     for(let i = 0; i < oldButtons.length;i++){

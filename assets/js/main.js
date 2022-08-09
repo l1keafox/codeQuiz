@@ -12,11 +12,13 @@ let allQuestions =  [
     {   
         question: "Would you rather own a horse the size of a cat or a cat the size of a horse", // 
         answers: ["horse the size of a cat","cat the size of a horse","why?"], 
+        image: "https://assets3.thrillist.com/v1/image/2542967/600x460/scale;webp=auto;jpeg_quality=60.jpg",
         context: "think of the kids!",
         correctAnswer: 1, // 0-1 
     },
     {   
         question: "Are there birds in Canada?", // 
+        image:"https://static01.nyt.com/images/2021/12/10/business/10birds2-inyt/merlin_198728667_3ed9327d-a539-460d-8038-36880f6bb39a-mobileMasterAt3x.jpg",
         answers: ["True","False"], // 
         context: "who knows if canada is even real",
         correctAnswer: 1, // 0-1 
@@ -24,7 +26,14 @@ let allQuestions =  [
     {   
         question: "Do rainbows Exist in North Korea?", // 
         image:"https://media.gettyimages.com/photos/the-end-of-a-rainbow-with-a-field-in-the-foreground-picture-id104637612?s=612x612",
-        answers: ["True","False"], // 
+        answers: ["True","False","Rainbows"], // 
+        correctAnswer: 1, // 0-1 
+    },
+    {   
+        question: "Do car tires get tired? Do they have to retire?", // 
+        image:"https://www.hankooktire.com/content/dam/hankooktire/local/img/main/promoted-product/H750A-2.jpg",
+        answers: ["True","False","tired?","retire"], // 
+        context: " The tire is 80 feet tall and weighs 12 tons.",
         correctAnswer: 1, // 0-1 
     },
     
@@ -204,6 +213,8 @@ function printQuestion(){
     quizQuestion.textContent = oneQuestion.question;
     if( oneQuestion.image ){
         quizImage.setAttribute("src",oneQuestion.image );
+    } else {
+        quizImage.setAttribute("src"," " );
     }
 
     document.querySelector('#currentScore').textContent = "score: "+currentScore;

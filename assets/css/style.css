@@ -46,6 +46,10 @@ input {
     font-size: 2rem;
     padding:30px;
 }
+#questionImage{
+    width: 30%;
+    
+}
 /*
 p {
     font-size: 2rem;

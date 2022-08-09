@@ -10,15 +10,21 @@
 // Global scope variables. 
 let allQuestions =  [
     {   
-        question: "Why", // 
-        answers: ["ask","why","why","why"], // 
+        question: "Would you rather own a horse the size of a cat or a cat the size of a horse", // 
+        answers: ["horse the size of a cat","cat the size of a horse","why?"], 
+        context: "think of the kids!",
         correctAnswer: 1, // 0-1 
     },
     {   
-        question: "To do or not to do", // 
-        image:null,//
-
-        answers: ["todo","not"], // 
+        question: "Are there birds in Canada?", // 
+        answers: ["True","False"], // 
+        context: "who knows if canada is even real",
+        correctAnswer: 1, // 0-1 
+    },
+    {   
+        question: "Do rainbows Exist in North Korea?", // 
+        image:"https://media.gettyimages.com/photos/the-end-of-a-rainbow-with-a-field-in-the-foreground-picture-id104637612?s=612x612",
+        answers: ["True","False"], // 
         correctAnswer: 1, // 0-1 
     },
     
@@ -30,10 +36,12 @@ let currentTimerID;
 const qTimer = 60;
 let startButton = document.querySelector('#startButton');
 let quizQuestion = document.querySelector('#question');
+let quizImage = document.querySelector('#questionImage');
 let answersList = document.querySelector('#answers');
 let startScreen = document.querySelector('#startQuizScreen');
 let quizScreen = document.querySelector('#quizScreen');
 let results = document.querySelector('#results');
+let context = document.querySelector('#context');
 
 function startQuiz(event){
     console.log(event,"Starting Quiz");
@@ -44,6 +52,7 @@ function startQuiz(event){
     currentScore = 0;
     currentQuestionTimer = 60;
     results.textContent = " ";
+    context.textContent = " ";
     document.querySelector('#currentScore').textContent = "score: "+currentScore;
     startScreen.style.display = 'none';
     quizScreen.style.display = 'flex';
@@ -73,11 +82,13 @@ function questionAnswer(answer){
         console.log("GOOD ANSWER");
         currentScore += 100;
         results.textContent = answer + '+100 points';
+        context.textContent = allQuestions[questionIndex].context;
     } else {
         console.log("BAD ANSWER/TIMER");
         currentScore -= 50;
         currentQuestionTimer-=5;
-        results.textContent = answer + '-50 points';
+        results.textContent = answer + '-50 points, -5 sec';
+        context.textContent = allQuestions[questionIndex].context;
     }
     document.querySelector('#currentScore').textContent = "score: "+currentScore;
 
@@ -115,13 +126,16 @@ function recordHighScore(){
         } else {
             pHighScore = JSON.parse (rawHighScore);
         }
+        if(nameEntered.value === ""){
+            console.log("NOTHING entered");
+        } else {
+            pHighScore.push( {
+                name:nameEntered.value,
+                score:finalScore,
+            });
+        }
 
-        pHighScore.push( {
-            name:nameEntered.value,
-            score:finalScore,
-        });
         localStorage.setItem("highScore",JSON.stringify(pHighScore));
-
         showHighScore();
         enterName.style.display = 'none';
         questionIndex = 0;
@@ -188,6 +202,10 @@ function printQuestion(){
     }
     let oneQuestion = allQuestions[questionIndex];
     quizQuestion.textContent = oneQuestion.question;
+    if( oneQuestion.image ){
+        quizImage.setAttribute("src",oneQuestion.image );
+    }
+
     document.querySelector('#currentScore').textContent = "score: "+currentScore;
     for(let i = 0;i < oneQuestion.answers.length;i++){
         var answerButton = document.createElement('button');

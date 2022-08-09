@@ -1,27 +1,29 @@
+// Global scope variables. 
+
+let allQuestions =  [
 // Quiz data strucutre:
 /*
     {   
         question: "Why", // 
         answers: ["ask","why"], // 
         correctAnswer: 1, // 0-1 
+        images: url 
+        context: after answer text.
     }
-
 */
-// Global scope variables. 
-let allQuestions =  [
     {   
         question: "Would you rather own a horse the size of a cat or a cat the size of a horse", // 
         answers: ["horse the size of a cat","cat the size of a horse","why?"], 
         image: "https://assets3.thrillist.com/v1/image/2542967/600x460/scale;webp=auto;jpeg_quality=60.jpg",
         context: "think of the kids!",
-        correctAnswer: 1, // 0-1 
+        correctAnswer: 2, // 0-1 
     },
     {   
         question: "Are there birds in Canada?", // 
         image:"https://static01.nyt.com/images/2021/12/10/business/10birds2-inyt/merlin_198728667_3ed9327d-a539-460d-8038-36880f6bb39a-mobileMasterAt3x.jpg",
         answers: ["True","False"], // 
         context: "who knows if canada is even real",
-        correctAnswer: 1, // 0-1 
+        correctAnswer: 2, // 0-1 
     },
     {   
         question: "Do rainbows Exist in North Korea?", // 
@@ -34,15 +36,22 @@ let allQuestions =  [
         image:"https://www.hankooktire.com/content/dam/hankooktire/local/img/main/promoted-product/H750A-2.jpg",
         answers: ["True","False","tired?","retire"], // 
         context: " The tire is 80 feet tall and weighs 12 tons.",
-        correctAnswer: 1, // 0-1 
+        correctAnswer: 3, // 0-1 
     },
     
 ];
-let questionIndex = 0;
-let currentScore;
-let currentQuestionTimer;
-let currentTimerID;
-const qTimer = 60;
+
+
+let questionIndex = 0; // tracks which question is current
+let currentScore; // tracks current score of player
+let currentQuestionTimer; // Tracks time left
+let currentTimerID; // Timer ID that needs to be cleared
+const qTimer = 60; // Const game timer.
+
+
+/*
+    DOM objects
+*/
 let startButton = document.querySelector('#startButton');
 let quizQuestion = document.querySelector('#question');
 let quizImage = document.querySelector('#questionImage');
@@ -51,25 +60,28 @@ let startScreen = document.querySelector('#startQuizScreen');
 let quizScreen = document.querySelector('#quizScreen');
 let results = document.querySelector('#results');
 let context = document.querySelector('#context');
+let timerDisplay = document.querySelector('#currentTime');
+let enterName = document.querySelector('#enterName');
+let scorePrint = document.querySelector('#printScore');
+
 
 function startQuiz(event){
-    console.log(event,"Starting Quiz");
-
     /*
-    Doesn't work this doesn't
+         Start of the game, starts from an "click" on the start button
     */
+    console.log(event,"Starting Quiz");
+    // Clear game text and reset game stats.
     currentScore = 0;
     currentQuestionTimer = 60;
     results.textContent = " ";
     context.textContent = " ";
     document.querySelector('#currentScore').textContent = "score: "+currentScore;
-    startScreen.style.display = 'none';
-    quizScreen.style.display = 'flex';
-    printQuestion();
+    startScreen.style.display = 'none'; // Remove start screen
+    quizScreen.style.display = 'flex'; // Add in quiz screen
+    printQuestion(); // Display Questions
+    timerDisplay.textContent = 'timer:'+currentQuestionTimer; // Display Timer
 
-    var timerDisplay = document.querySelector('#currentTime');
-    timerDisplay.textContent = 'timer:'+currentQuestionTimer;
-    var timerInterval = setInterval(function(){
+    var timerInterval = setInterval(function(){ // This is adding the timer and Game over condidtion.
         currentQuestionTimer--;
         timerDisplay.textContent = 'timer:'+currentQuestionTimer;
         if(!currentQuestionTimer ){
@@ -78,25 +90,60 @@ function startQuiz(event){
             recordHighScore();
         }
     },1000);
-    currentTimerID = timerInterval;
-        
-    var imageContainer = document.querySelector('#answers');
-    imageContainer.addEventListener("click",answerQuiz);
-    console.log(imageContainer ,'answer container');
+    currentTimerID = timerInterval; // stores timerID for removal later
+    answersList.addEventListener("click",answerQuiz); // Adds listener for answer buttons
 }
 
-function questionAnswer(answer){
 
-    if(answer){
+function printQuestion(){
+    // answersList needs to clear of any old buttons.
+    let oldButtons = document.querySelectorAll('.anAnswer');
+    for(let i = 0; i < oldButtons.length;i++){
+        oldButtons[i].remove();
+    }
+
+    let oneQuestion = allQuestions[questionIndex];
+    quizQuestion.textContent = oneQuestion.question;
+
+    if( oneQuestion.image ){ // Add image other wise
+        quizImage.setAttribute("src",oneQuestion.image );
+    } else { // clear image
+        quizImage.setAttribute("src"," " );
+    }
+
+    document.querySelector('#currentScore').textContent = "score: "+currentScore;
+    for(let i = 0;i < oneQuestion.answers.length;i++){
+        var answerButton = document.createElement('button');
+        answerButton.textContent = oneQuestion.answers[i];
+        answerButton.setAttribute('data-buttonID',i);
+        answerButton.setAttribute('class','anAnswer');
+        answersList.appendChild(answerButton);
+    }
+}
+
+
+function answerQuiz(event){ // Event 
+    var element = event.target;
+    var buttonAnswer = element.getAttribute('data-buttonID'); // get data-buttonID for this button
+    let oneQuestion = allQuestions[questionIndex]; // Get current question data
+    let thisAnswer;
+
+    if( oneQuestion.correctAnswer == buttonAnswer){
+        thisAnswer = true;
+    } else {
+        thisAnswer = false;
+    }
+
+    if(thisAnswer){
         console.log("GOOD ANSWER");
         currentScore += 100;
-        results.textContent = answer + '+100 points';
+        results.textContent = thisAnswer + '+100 points';
         context.textContent = allQuestions[questionIndex].context;
     } else {
         console.log("BAD ANSWER/TIMER");
         currentScore -= 50;
         currentQuestionTimer-=5;
-        results.textContent = answer + '-50 points, -5 sec';
+        results.textContent = thisAnswer + '-50 points, -5 sec';
         context.textContent = allQuestions[questionIndex].context;
     }
     document.querySelector('#currentScore').textContent = "score: "+currentScore;
@@ -114,8 +161,6 @@ function questionAnswer(answer){
 
 
 function recordHighScore(){
-    let enterName = document.querySelector('#enterName');
-    let scorePrint = document.querySelector('#printScore');
     clearInterval(currentTimerID);
     
     enterName.style.display = 'flex';
@@ -202,47 +247,6 @@ function showHighScore(scoreList){
     console.log("SHow high Score?");
 }
 
-function printQuestion(){
-    //restartTimer();
-    // answersList needs to clear of any buttons
-    let oldButtons = document.querySelectorAll('.anAnswer');
-    for(let i = 0; i < oldButtons.length;i++){
-        oldButtons[i].remove();
-    }
-    let oneQuestion = allQuestions[questionIndex];
-    quizQuestion.textContent = oneQuestion.question;
-    if( oneQuestion.image ){
-        quizImage.setAttribute("src",oneQuestion.image );
-    } else {
-        quizImage.setAttribute("src"," " );
-    }
-
-    document.querySelector('#currentScore').textContent = "score: "+currentScore;
-    for(let i = 0;i < oneQuestion.answers.length;i++){
-        var answerButton = document.createElement('button');
-        answerButton.textContent = oneQuestion.answers[i];
-        answerButton.setAttribute('data-buttonID',i);
-        answerButton.setAttribute('class','anAnswer');
-        answersList.appendChild(answerButton);
-    }
-}
-
-function answerQuiz(event){
-    var element = event.target;
-    var buttonAnswer = element.getAttribute('data-buttonID');
-    let oneQuestion = allQuestions[questionIndex];
-    let thisAnswer;
-    if( oneQuestion.correctAnswer == buttonAnswer){
-        thisAnswer = true;
-    } else {
-        thisAnswer = false;
-    }
-
-    //After answer let's figure out if this is end of the quiz?
-
-    questionAnswer(thisAnswer);
-    
-}
 
 function showScoreHideEverything(event){
     console.log('score button pressed');

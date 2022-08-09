@@ -14,23 +14,23 @@
 
 <body>
     <header>
-        <h1>Code quiz!</h1>
+        <h2>Code quiz!</h2>
     </header>
 
     <div>
         <div id="scoreBar">
-            <article>
-                <a href="#" id="highScore">high score</a>
-            </article>
-            <article id="currentScore">
+            <div>
+                <a href="#" id="highScore">view high score</a>
+            </div>
+            <div id="currentScore">
                 score:
-            </article>
-            <article id="currentTime">
+            </div>
+            <div id="currentTime">
                 Timer:
-            </article>
+            </div>
         </div>
         
-        <article id="startQuizScreen"" >
+        <article id="startQuizScreen" class="displayScreen" >
             <h1> Coding Quiz Challenge </h1>
             <br>
             <p> Try to answer the questions in the time given</p>
@@ -38,7 +38,7 @@
             <button id="startButton">Start Quiz</button>
         </article>
 
-        <article id="quizScreen">
+        <article id="quizScreen" class="displayScreen">
             <h1 id="question"> </h1>
             <br>
             <div id="answers"> </div>
@@ -47,22 +47,25 @@
             
         </article>
 
-        <article id="enterName">
-            <h1> Enter your name</h1>
+        <article id="enterName" class="displayScreen">
+            <h1 id="printScore" > Enter your name</h1>
             <input type="text" id="scoreName">
             <button id="submitName">Submit</button>
         </article>
 
-        <article id="highScoreList"> 
+        <article id="highScoreList" class="displayScreen"> 
             <h1> High Score List </h1>
-            <ul></ul>
-            <button> Close </button>
+            <ul id="playerScoreList"></ul>
+            <div>
+                <button id="closeHighScore"> Go Back </button>
+                <button id="clearScore"> Clear </button>
+            </div>
         </article>
 
     </div>
 
     <footer>
-        <h1>Created by Raymond Lewis</h1>
+        <h2>Created by Raymond Lewis</h2>
     </footer>
 
     <script src="./assets/js/main.js"></script>
